@@ -392,3 +392,138 @@ Lo que aprendimos en esta aula:
 
 [Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/aula-3 "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/aula-3.zip "aquí") para descargarlos directamente.
 
+### Haga lo que hicimos en aula
+
+Llegó la hora de que sigas todos los pasos realizados por mí durante esta clase. Si ya lo has hecho ¡Excelente! Si todavía no lo has hecho, es importante que ejecutes lo que fue visto en los vídeos para que puedas continuar con la próxima aula.
+
+1. En Workbench también podemos consultar el plan de ejecución. Crea un nuevo script SQL, digita y ejecuta:
+
+```SQL
+SELECT A.CODIGO_DEL_PRODUCTO FROM tabla_de_productos A;
+```
+
+2. En el área donde aparece el resultado, dirígete hacia el final de las opciones, y selecciona Execution Plan:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/8.png)
+
+Observarás el plan de ejecución de manera gráfica.
+
+3. Visualicemos consultas más complejas. Primero, digita y ejecuta en el mismo script:
+
+```SQL
+SELECT A.CODIGO_DEL_PRODUCTO, C.CANTIDAD FROM tabla_de_productos A INNER JOIN items_facturas C ON A.CODIGO_DEL_PRODUCTO = C.CODIGO_DEL_PRODUCTO;
+```
+
+4. Al visualizar nuevamente el plan de ejecución, aparece así:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/9.png)
+
+5. También, digita y ejecuta:
+
+```SQL
+SELECT A.CODIGO_DEL_PRODUCTO, YEAR(B.FECHA_VENTA) AS ANO,C.CANTIDAD FROM tabla_de_productos A INNER JOIN items_facturas C ON A.CODIGO_DEL_PRODUCTO = C.CODIGO_DEL_PRODUCTO INNER JOIN facturas B ON C.NUMERO = B.NUMERO;
+```
+
+6. Una vez más, el plan de ejecución es el siguiente:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/10.png)
+
+7. El color rojo indica que no encontró un índice, entonces tuvo que hacer un scan a toda la tabla; en cambio, el color verde indica que sí encontró un índice, y el mismo, facilitó la búsqueda al interior de la tabla, reduciendo el costo de procesamiento. En este caso, el índice fue creado al momento de establecer claves primarias y foráneas en las respectivas tablas.
+
+8. Ahora, vamos a recrear las tablas sin ningún tipo de índice, ni claves primarias, ni claves externas. También, almacenaremos los registros correspondientes en las nuevas tablas que crearemos. Digita y ejecuta:
+
+```SQL
+CREATE TABLE `facturas1` (
+  `DNI` varchar(11) NOT NULL,
+  `MATRICULA` varchar(5) NOT NULL,
+  `FECHA_VENTA` date DEFAULT NULL,
+  `NUMERO` int NOT NULL,
+  `IMPUESTO` float NOT NULL  
+);
+
+CREATE TABLE `items_facturas1` (
+  `NUMERO` int NOT NULL,
+  `CODIGO_DEL_PRODUCTO` varchar(10) NOT NULL,
+  `CANTIDAD` int NOT NULL,
+  `PRECIO` float NOT NULL
+);
+
+CREATE TABLE `tabla_de_productos1` (
+  `CODIGO_DEL_PRODUCTO` varchar(10) NOT NULL,
+  `NOMBRE_DEL_PRODUCTO` varchar(50) DEFAULT NULL,
+  `TAMANO` varchar(10) DEFAULT NULL,
+  `SABOR` varchar(20) DEFAULT NULL,
+  `ENVASE` varchar(20) DEFAULT NULL,
+  `PRECIO_DE_LISTA` float NOT NULL
+) ;
+
+INSERT INTO facturas1
+SELECT * FROM facturas;
+
+INSERT INTO items_facturas1
+SELECT * FROM items_facturas;
+
+INSERT INTO tabla_de_productos1
+SELECT * FROM tabla_de_productos;
+```
+
+9. Observemos el plan de ejecución de la query más compleja de las que hemos trabajado hasta el momento aplicado a las tablas que creamos en el paso anterior. Para ello, digita y ejecuta:
+
+```SQL
+SELECT A.CODIGO_DEL_PRODUCTO, YEAR(B.FECHA_VENTA) AS ANO,C.CANTIDAD FROM tabla_de_productos1 A INNER JOIN items_facturas1 C ON A.CODIGO_DEL_PRODUCTO = C.CODIGO_DEL_PRODUCTO INNER JOIN facturas1 B ON C.NUMERO = B.NUMERO;
+```
+
+10. El plan de ejecución de workbench muestra lo siguiente:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/11.png)
+
+Todos los rectángulos aparecen en rojo, el costo de procesamiento fue el más alto posible debido a que las búsquedas se realizaron sin la ayuda de índices.
+
+11. Vamos ahora a trabajar con la herramienta mysqlslap. Esta, simula accesos concurrentes a una consulta. Desde el símbolo del sistema de Windows, vamos a ejecutar los siguientes comandos para acceder nuevamente a mysql:
+
+```cmd
+cd\
+cd "Program Files"
+cd "MySQL"
+cd "MySQL Server 8.0"
+cd Bin
+```
+
+12. Al estar dentro del directorio `bin/`, digita y ejecuta:
+
+```cmd
+mysqlslap -uroot -p --concurrency=100 --iterations=10 --create-schema=jugos_ventas --query="SELECT * FROM facturas WHERE FECHA_VENTA = '20170101'";
+```
+
+13. Observarás un output semejante al siguiente:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/12.png)
+
+Este es el promedio de tiempo que van a demorar 100 usuarios diferentes para obtener el resultado de la misma consulta al ejecutarla al mismo tiempo.
+
+14. Si efectuamos la simulación anterior utilizando como referencia la tabla que creamos sin claves primarias ni foráneas, notaremos un cambio en los tiempos de procesamiento. Digita y ejecuta:
+
+```cmd
+mysqlslap -uroot -p --concurrency=100 --iterations=10 --create-schema=jugos_ventas --query="SELECT * FROM facturas1 WHERE FECHA_VENTA = '20170101'";
+```
+
+Y el output será, respectivamente:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/13.png)
+
+¿Qué puedes concluir con estos resultados?
+
+### Lo que aprendimos
+
+Lo que aprendimos en esta aula:
+
+- Cómo el índice mejora el plan de ejecución.
+- Que las claves primarias y foráneas crean índices y ayudan a mejorar el plan de ejecución.
+- A usar la herramienta **mysqlslap** para simular conexiones.
+
+### Proyecto del aula anterior
+
+¿Comenzando en esta etapa? Aquí puedes descargar los archivos del proyecto que hemos avanzado hasta el aula anterior.
+
+[Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/aula-4 "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/aula-4.zip "aquí") para descargarlos directamente.
+
