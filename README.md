@@ -309,3 +309,86 @@ Lo que aprendimos en esta aula:
 
 [Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/aula-2 "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/aula-2.zip "aquí") para descargarlos directamente.
 
+### Haga lo que hicimos en aula
+
+Llegó la hora de que sigas todos los pasos realizados por mí durante esta clase. Si ya lo has hecho ¡Excelente! Si todavía no lo has hecho, es importante que ejecutes lo que fue visto en los vídeos para que puedas continuar con la próxima aula.
+
+1. A través del símbolo del sistema de Windows, accede al directorio de MySQL:
+
+```SQL
+cd\
+cd "Program Files"
+cd "MySQL"
+cd "MySQL Server 8.0"
+cd Bin
+```
+
+2. En seguida, accede a la interfaz de línea de comando de MySQL (la contraseña del usuario root será necesaria):
+
+```SQL
+mysql -uroot -p
+```
+
+3. Al estar dentro de la interfaz de línea de comando de MySQL, digita:
+
+```SQL
+SELECT * FROM FACTURAS WHERE FECHA_VENTA='20170101';
+```
+
+4. Ahora, vamos a analizar el plan de ejecución de este comando:
+
+```SQL
+EXPLAIN FORMAT=JSON SELECT * FROM FACTURAS WHERE FECHA_VENTA='20170101' \G; 
+```
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/6.png)
+
+El costo de esta consulta fue de 9065.80.
+
+5. Para mejorar esta consulta, una de las maneras más efectivas es creando un índice para el campo empleado como criterio de filtro. Para nuestro caso, el campo que queremos modificar es `FECHA_VENTA`. Digita y ejecuta:
+
+```SQL
+ALTER TABLE FACTURAS ADD INDEX(FECHA_VENTA);
+```
+
+6. Analicemos el plan de ejecución de la query anterior después de crear el índice. Digita y ejecuta nuevamente:
+
+```SQL
+EXPLAIN FORMAT=JSON SELECT * FROM FACTURAS WHERE FECHA_VENTA='20170101' \G; 
+```
+
+¿Cuál es el costo que obtuviste para esta consulta?
+
+7. En efecto, el costo de la consulta se redujo considerablemente debido a que la búsqueda de la información está siendo realizada mediante el índice. No es necesario recorrer toda la tabla, sino que ya el índice está allí facilitando el procesamiento de la información:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/7.png)
+
+8. Ahora, eliminemos el índice del campo usado como criterio de filtro a través del siguiente comando para verificar si realmente el índice hace la diferencia a la hora de realizar nuestras consultas:
+
+```SQL
+ALTER TABLE FACTURAS DROP INDEX FECHA_VENTA;
+```
+
+9. Analicemos una vez más el plan de ejecución:
+
+```SQL
+EXPLAIN FORMAT=JSON SELECT * FROM FACTURAS WHERE FECHA_VENTA='20170101' \G; 
+```
+
+¿Cuál fue el costo obtenido después de eliminar el índice?
+
+### Lo que aprendimos
+
+Lo que aprendimos en esta aula:
+
+- A reconocer el concepto de índices.
+- El funcionamiento del algoritmo B-Tree.
+- El funcionamiento del algoritmo Hash.
+- A utilizar índices.
+
+### Proyecto del aula anterior
+
+¿Comenzando en esta etapa? Aquí puedes descargar los archivos del proyecto que hemos avanzado hasta el aula anterior.
+
+[Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/aula-3 "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/aula-3.zip "aquí") para descargarlos directamente.
+
