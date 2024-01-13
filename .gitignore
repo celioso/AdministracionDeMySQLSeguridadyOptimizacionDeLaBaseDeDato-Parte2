@@ -25,6 +25,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+jugos_ventas_facturas.sql
+jugos_ventas_items_facturas.sql
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
