@@ -527,3 +527,107 @@ Lo que aprendimos en esta aula:
 
 [Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/aula-4 "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/aula-4.zip "aquí") para descargarlos directamente.
 
+### Haga lo que hicimos en aula
+
+Llegó la hora de que sigas todos los pasos realizados por mí durante esta clase. Si ya lo has hecho ¡Excelente! Si todavía no lo has hecho, es importante que ejecutes lo que fue visto en los vídeos para que puedas continuar con la próxima aula.
+
+1. Cuando instalaste MySQL, fue creado un usuario root, con privilegios de administrador. Sin embargo, normalmente, este usuario se elimina y se sustituye por un administrador real.
+
+2. En Workbench, en el área **Navigator** haz clic en la pestaña **Administration**:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/14.png)
+
+3. Haz clic en Users and Privileges:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/15.png)
+
+4. Encontrarás una nueva ventana, y, en el lado izquierdo de la misma, tendrás la lista de usuarios de ambiente. Allí se encuentra el usuario **root**.
+
+5.  Haz clic sobre el botón **Add Account**:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/16.png)
+
+6. En la caja de diálogo, en la pestaña Login, rellena los campos **Login Name, Limit to Hosts Matching, Password** y confirma la contraseña como se muestra a continuación (Para mayor practicidad, puedes usar como contraseña el mismo nombre de usuario):
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/17.png)
+
+7. En la pestaña Administrative Roles, escoge los privilegios que este usuario tendrá en MySQL. Selecciona DBA; así, todos los privilegios serán otorgados:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/18.png)
+
+8. Haz clic en **Apply**. De esta manera, el usuario será creado.
+
+9. Podemos ahora cerrar la pestaña de la conexión actual en Workbench.
+
+10. En la pantalla de conexiones, crea una nueva conexión (haciendo clic sobre el botón `+`), con el usuario creado en los pasos anteriores:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/19.png)
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/20.png)
+
+11. Haz clic en **Test Connection** y guarda la conexión.
+
+12. Accede a Workbench con el usuario **admin01**.
+
+13. De igual manera, podemos crear usuarios a través de líneas de comando en SQL. Para crear otro usuario administrador (que llamaremos** admin02**). Digita y ejecuta:
+
+```cmd
+CREATE USER 'admin02'@'localhost' IDENTIFIED BY 'admin02';
+GRANT ALL PRIVILEGES ON *.* TO 'admin02'@'localhost' WITH GRANT OPTION;
+```
+
+14. Para eliminar el usuario **root**, desde un script en la conexión **Local Instance admin01** digita y ejecuta:
+
+```cmd
+DROP USER 'root'@'localhost';
+```
+
+15. Si intentas conectarte al servidor a través del usuario root no será posible porque este usuario ya no existe.
+
+16. Lo que determina lo que un usuario podrá hacer o no, son sus parámetros, tanto en la caja de diálogo de Workbench como a través de comandos SQL.
+
+17. Ahora, crearemos un usuario llamado **user01**, usando la pestaña **Administration** y la opción **Users and Privileges**. Este usuario tendrá los siguientes privilegios: CREATE TEMPORARY TABLES, DELETE, EXECUTE, INSERT, LOCK TABLES, SELECT y UPDATE:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/21.png)
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/22.png)
+
+18. haz clic en Apply.
+
+19. Crea otro usuario normal, pero en esta ocasión será via comandos SQL. Digita y ejecuta:
+
+```SQL
+CREATE USER 'user02'@'localhost' IDENTIFIED BY 'user02';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES,
+LOCK TABLES, EXECUTE ON *.* TO 'user02'@'localhost';
+```
+
+20. Adicionalmente, crea un usuario solamente para lectura, con login **read01**, a través de la caja de diálogo y otro, **read02**, via SQL. Para estos usuarios, los privilegios serán SELECT y EXECUTE. Los comandos que emplearás son los siguientes:
+
+```SQL
+CREATE USER 'read02'@'localhost' identified BY 'read02';
+GRANT SELECT, EXECUTE ON *.* TO 'read02'@'localhost';
+```
+
+21. Finalmente, crea dos usuarios más para hacer copias de seguridad, con los logins back01 y back02. Aquí, estos usuarios solamente pueden hacer backups:
+
+```SQL
+CREATE USER 'back02'@'localhost' IDENTIFIED BY 'back02';
+GRANT SELECT, RELOAD, LOCK TABLES, REPLICATION CLIENT ON 
+*.* TO 'back02'@'localhost' 
+```
+
+### Lo que aprendimos
+
+Lo que aprendimos en esta aula:
+
+- A crear usuarios administradores y a remover el usuario **root**.
+- Cómo crear un usuario con privilegios para acceso normal (sin ser administrador).
+- Cómo crear un usuario que solo tiene acceso de lectura a los datos.
+- Cómo crear un usuario que solamente ejecuta backups.
+- A crear los usuarios a través de cajas de diálogo de Workbench y a través de líneas de comando.
+
+### Proyecto del aula anterior
+
+¿Comenzando en esta etapa? Aquí puedes descargar los archivos del proyecto que hemos avanzado hasta el aula anterior.
+
+[Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/aula-5 "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/aula-5.zip "aquí") para descargarlos directamente.
+
