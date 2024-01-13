@@ -631,3 +631,106 @@ Lo que aprendimos en esta aula:
 
 [Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/aula-5 "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/aula-5.zip "aquí") para descargarlos directamente.
 
+### Haga lo que hicimos en aula
+
+Llegó la hora de que sigas todos los pasos realizados por mí durante esta clase. Si ya lo has hecho ¡Excelente! Si todavía no lo has hecho, es importante que ejecutes lo que fue visto en los vídeos para que puedas continuar con la próxima aula.
+
+1. Todos los usuarios creados hasta el momento pueden acceder a la base de datos a través de la máquina **localhost**.
+
+Cuando creas un usuario,si mantienes el símbolo `%` o `__ `en el campo **Limit to Hosts Matching**, quedará determinado que otros IPs puedan ser utilizados para acceder a la base. Estos caracteres funcionan como comodines:
+
+```SQL
+CREATE USER 'admingeneric02'@'%' IDENTIFIED BY 'admingeneric02';
+GRANT ALL PRIVILEGES ON *.* TO 'admingeneric02'@'%' WITH GRANT OPTION;
+```
+
+2. Además, puedes limitar el acceso a las bases y tablas. Crea el usuario user03, pero, en vez de adicionar privilegios globales en la pestaña Administrative Roles, entra a la pestaña Schema Privileges y adiciona el esquema al cual podrá acceder, y selecciona privilegios de usuario normal:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/23.png)
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/24.png)
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/25.png)
+
+3. A continuación, crea un usuario user04 mediante el script de SQL y adiciona los privilegios de acceso únicamente en la base jugos_ventas:
+
+```SQL
+CREATE USER 'user04'@'%' IDENTIFIED BY 'user04';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE TEMPORARY TABLES,
+LOCK TABLES, EXECUTE ON jugos_ventas.* TO 'user04'@'%';
+```
+
+El usuario recién creado solamente puede visualizar la base jugos_ventas.
+
+4. Crea una nueva conexión para el usuario user04:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/26.png)
+
+5. Accede a la base mediante la conexión creada en el paso anterior y nota que solamente la base jugos_ventas está disponible para acceso:
+
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/27.png)
+
+6. También, puedes limitar el acceso a las tablas, estableciendo permisos sobre las operaciones que se pueden realizar sobre ellas:
+
+```SQL
+CREATE USER 'user05'@'%' IDENTIFIED BY 'user05';
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON jugos_ventas.facturas TO 'user05'@'%';
+
+GRANT SELECT ON jugos_ventas.tabla_de_vendedores TO 'user05'@'%';
+```
+
+Los comandos anteriores le otorgan privilegios al usuario user05 para insertar, actualizar, excluir y consultar la tabla de facturas, pero solamente le permite el privilegio de lectura a la tabla tabla_de_vendedores.
+
+7. Crea una conexión para el usuario user05 llamada local user05 y entra a Workbench mediante esta conexión.
+
+8. En la conexión local user05 Ejecuta el comando:
+```SQL
+INSERT INTO `jugos_ventas`.`tabla_de_vendedores`
+(`MATRICULA`,
+`NOMBRE`,
+`PORCENTAJE_COMISION`,
+`FECHA_ADMISION`,
+`VACACIONES`,
+`BARRIO`)
+VALUES
+('256',
+'Jose García',
+0.15,
+'20190303',
+0,
+'Oblatos');
+```
+
+El output será el siguiente error:
+![](https://caelum-online-public.s3.amazonaws.com/ESP-1839-Administraci%C3%B3n+de+MySQL+Seguridad+y+optmizaci%C3%B3n+de+la+base+de+datos+-+Parte+2/28.png)
+
+9. Existe un comando para verificar los usuarios existentes:
+
+```SQL
+SELECT * FROM mysql.user;
+```
+
+10. Adicionalmente, hay otro comando que muestra los accesos de un usuario, por ejemplo:
+
+```SQL
+SHOW GRANTS FOR 'user02'@'localhost';
+```
+
+11. Finalmente, el comando REVOKE ALL retira los privilegios de acceso del usuario especificado:
+
+```SQL
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'user02'@'localhost';
+```
+
+### Proyecto final
+
+Aquí puedes descargar los archivos del proyecto completo.
+
+[Descargue los archivos en Github](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/tree/proyecto-final "Descargue los archivos en Github") o haga clic [aquí](https://github.com/alura-es-cursos/1839-administracion-de-mysql-parte-2/archive/refs/heads/proyecto-final.zip "aquí") para descargarlos directamente.
+
+### Lo que aprendimos
+
+Lo que aprendimos en esta aula:
+
+- Cómo limitar el acceso de usuario mediante la dirección IP.
+- A limitar el acceso por base y por tabla.
+- Cómo revocar los privilegios de los usuarios.

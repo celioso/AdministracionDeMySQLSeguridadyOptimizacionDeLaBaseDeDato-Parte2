@@ -1,3 +1,3 @@
-CREATE USER "back01"@"localhost" IDENTIFIED BY "back01";
+CREATE USER "admin02"@"localhost" IDENTIFIED BY "admin02";
 
 GRANT SELECT, RELOAD, LOCK TABLES, REPLICATION CLIENT ON *.* TO "back01"@"localhost";
